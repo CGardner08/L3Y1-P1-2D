@@ -7,6 +7,7 @@ TagManager:
   - Exit
   - Hazard
   - Enemy
+  - Slider
   layers:
   - Default
   - TransparentFX
