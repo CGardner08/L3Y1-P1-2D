@@ -1,8 +1,11 @@
+using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
+ 
 {
     [Header("UI")]
     public TMP_Text timerTxt;
@@ -26,6 +29,14 @@ public class PlayerController : MonoBehaviour
     public float groundDistance;
     public LayerMask layerMask;
 
+    private bool canDash = true;
+    private bool isDashing;
+    private float dashingPower = 24f;
+    private float dashingTime = 0.2f;
+    private float dashingCooldown = 1f;
+    public TrailRenderer tr;
+   
+    
     RaycastHit2D hit;
 
     Vector3 startPos;
@@ -44,6 +55,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isDashing)
+        {
+            return;
+        }
+
+
         timer += Time.deltaTime;
         timerTxt.text = timer.ToString("F2");
         
@@ -51,8 +68,21 @@ public class PlayerController : MonoBehaviour
         Health();
         Shoot();
         MovementDirection();
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        {
+            StartCoroutine(Dash());
+        }
     }
 
+    private void FixedUpdate() 
+    {
+        if (isDashing)
+        {
+            return;
+        }
+    }
+    
     void Movement()
     {
         inputs = Input.GetAxisRaw("Horizontal");
@@ -88,6 +118,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0f;
+        rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashingTime);
+        tr.emitting = false;
+        rb.gravityScale = originalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash = true;
+    }
+
     void MovementDirection()
     {
         if(isFacingRight && inputs < -.1f)
@@ -104,6 +150,8 @@ public class PlayerController : MonoBehaviour
     {
         isFacingRight = !isFacingRight;
         transform.Rotate(0f, 180f,0f);
+
+        dashingPower = -dashingPower;
     }
     private void OnTriggerEnter2D(Collider2D other) 
     {
@@ -122,3 +170,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 }
+
+   
+

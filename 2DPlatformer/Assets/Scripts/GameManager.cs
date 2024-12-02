@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -8,7 +9,7 @@ public class GameManager : MonoBehaviour
     public Canvas inGame;
     public Canvas pauseMenu;
 
-    bool isPaused;
+    public bool isPaused;
 
     // Start is called before the first frame update
     void Start()
@@ -35,8 +36,18 @@ public class GameManager : MonoBehaviour
         else
         {
             Time.timeScale = 1f;
-            inGame.enabled = false;
-            pauseMenu.enabled = true;
+            inGame.enabled = true;
+            pauseMenu.enabled = false;
         }
+    }
+
+    public void OnPlay()
+    {
+        isPaused = false;
+    }
+
+    public void OnExit()
+    {
+        SceneManager.LoadScene("Main Menu");
     }
 }
