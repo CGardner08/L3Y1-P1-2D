@@ -68,6 +68,7 @@ public class PlayerController : MonoBehaviour
         Health();
         Shoot();
         MovementDirection();
+        UpdateAnimations();
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
@@ -112,7 +113,7 @@ public class PlayerController : MonoBehaviour
 
     void Shoot()
     {
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             Instantiate(bullet, shootingPoint.position, shootingPoint.rotation);
         }
@@ -153,6 +154,25 @@ public class PlayerController : MonoBehaviour
 
         dashingPower = -dashingPower;
     }
+    
+    void UpdateAnimations()
+    {
+        Animator anim = transform.GetChild(0).transform.GetComponent<Animator>();
+
+        anim.SetBool("isGrounded", hit.collider);
+
+        if (inputs != 0)
+        {
+            anim.SetBool("isMoving", true);
+        
+        }
+        else
+        {
+            anim.SetBool("isMoving", false);
+        }
+        
+    }
+
     private void OnTriggerEnter2D(Collider2D other) 
     {
         if (other.gameObject.CompareTag("Hazard"))
